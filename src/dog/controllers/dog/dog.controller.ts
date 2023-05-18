@@ -15,8 +15,11 @@ export class DogController {
   constructor(private dogService: DogService) {}
 
   @Get()
-  find(@Query() body) {
-    return this.dogService.find(body);
+  find(@Query('breed') breed: string, @Query('age') age: number) {
+    if (age || breed) {
+      return this.dogService.find(breed, age);
+    }
+    return this.dogService.findAll();
   }
 
   @Get(':dogId')

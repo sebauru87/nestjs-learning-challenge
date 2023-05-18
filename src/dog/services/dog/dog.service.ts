@@ -1,25 +1,55 @@
 import { Injectable } from '@nestjs/common';
 
+import { DOGS } from '../../../../db/dogs';
+
 @Injectable()
 export class DogService {
-  find(body): any {
-    // return 'find is working well !';
-    return `find function with params breed: ${body.breed} & age: ${body.age}`;
+  find(breed: string, age: number) {
+    let filteredDogs = [];
+
+    if (breed && age) {
+      return DOGS.filter((dog) => dog.breed == breed && dog.age >= age);
+    }
+
+    breed
+      ? (filteredDogs = DOGS.filter((dog) => dog.breed == breed))
+      : (filteredDogs = DOGS.filter((dog) => dog.age >= age));
+
+    return filteredDogs;
   }
 
   findOne(dogId: number) {
-    return `findOne is working, and the dogId parameter is ${dogId}`;
+    return DOGS.find((dog) => dog.id == dogId);
+  }
+
+  findAll() {
+    return DOGS;
   }
 
   create(body: any): any {
-    return `create function with properties, breed: ${body.breed}, age: ${body.age} & color: ${body.color}`;
+    const newDog = {
+      id: DOGS.length + 1,
+      ...body,
+    };
+    DOGS.push(newDog);
+    return newDog;
   }
 
   update(dogId: number, body: any): any {
-    return `update function dog with id: ${dogId} & property, age: ${body.age}`;
+    const foundIndex = DOGS.findIndex((d) => d.id == dogId);
+    const updatedDog = {
+      ...DOGS[foundIndex],
+      ...body,
+    };
+    DOGS[foundIndex] = updatedDog;
+    return updatedDog;
   }
 
   delete(dogId: number): any {
-    return `delete function dog with id: ${dogId}`;
+    const indexOfObject = DOGS.findIndex((d) => {
+      return d.id == dogId;
+    });
+    DOGS.splice(indexOfObject, 1);
+    return `Dog deleted successfully`;
   }
 }
