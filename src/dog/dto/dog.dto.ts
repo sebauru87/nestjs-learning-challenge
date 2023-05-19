@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
+import { Owner } from 'src/entities';
 
 export class DogDto {
   @ApiProperty()
@@ -14,4 +15,7 @@ export class DogDto {
 
   @ApiProperty()
   color: string;
+
+  @ApiProperty()
+  owner: Owner;
 }

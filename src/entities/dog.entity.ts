@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Owner } from './owner.entity';
 
 @Entity()
 export class Dog {
@@ -23,4 +25,7 @@ export class Dog {
     default: '',
   })
   color: string;
+
+  @ManyToOne(() => Owner, (owner) => owner.dogs, { onDelete: 'CASCADE' })
+  owner: Owner;
 }
