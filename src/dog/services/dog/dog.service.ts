@@ -1,55 +1,43 @@
 import { Injectable } from '@nestjs/common';
+import { MoreThanOrEqual, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
+import { Dog } from '../../../entities';
+import { CreateDogDto } from '../../dto/create-dog.dto';
+import { UpdateDogDto } from '../../dto/update-dog.dto';
 import { DOGS } from '../../../../db/dogs';
 
 @Injectable()
 export class DogService {
+  constructor(
+    @InjectRepository(Dog) private readonly dogRepository: Repository<Dog>,
+  ) {}
+
   find(breed: string, age: number) {
-    let filteredDogs = [];
-
-    if (breed && age) {
-      return DOGS.filter((dog) => dog.breed == breed && dog.age >= age);
-    }
-
-    breed
-      ? (filteredDogs = DOGS.filter((dog) => dog.breed == breed))
-      : (filteredDogs = DOGS.filter((dog) => dog.age >= age));
-
-    return filteredDogs;
+    return this.dogRepository.find({ where: [{ breed: breed }, { age: age }] });
   }
 
   findOne(dogId: number) {
-    return DOGS.find((dog) => dog.id == dogId);
+    return this.dogRepository.findOne({ where: { id: dogId } });
   }
 
   findAll() {
     return DOGS;
   }
 
-  create(body: any): any {
-    const newDog = {
-      id: DOGS.length + 1,
-      ...body,
-    };
-    DOGS.push(newDog);
-    return newDog;
+  async create(createDogDto: CreateDogDto) {
+    const newDog = await this.dogRepository.create(createDogDto);
+    return this.dogRepository.save(newDog);
   }
 
-  update(dogId: number, body: any): any {
-    const foundIndex = DOGS.findIndex((d) => d.id == dogId);
-    const updatedDog = {
-      ...DOGS[foundIndex],
-      ...body,
-    };
-    DOGS[foundIndex] = updatedDog;
-    return updatedDog;
-  }
-
-  delete(dogId: number): any {
-    const indexOfObject = DOGS.findIndex((d) => {
-      return d.id == dogId;
+  update(updateDogDto: UpdateDogDto, idDog: number) {
+    return this.dogRepository.save({
+      id: idDog,
+      ...updateDogDto,
     });
-    DOGS.splice(indexOfObject, 1);
-    return `Dog deleted successfully`;
+  }
+
+  delete(idDog: number) {
+    return this.dogRepository.delete({ id: idDog });
   }
 }

@@ -1,13 +1,18 @@
 import {
-  Body,
   Controller,
-  Delete,
   Get,
   Param,
-  Patch,
-  Post,
   Query,
+  Body,
+  Post,
+  Patch,
+  Delete,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
+
+import { CreateDogDto } from 'src/dog/dto/create-dog.dto';
+import { UpdateDogDto } from 'src/dog/dto/update-dog.dto';
 import { DogService } from '../../../dog/services/dog/dog.service';
 
 @Controller('dog')
@@ -28,13 +33,15 @@ export class DogController {
   }
 
   @Post()
-  create(@Body() body) {
-    return this.dogService.create(body);
+  @UsePipes(ValidationPipe)
+  create(@Body() createDogDto: CreateDogDto) {
+    return this.dogService.create(createDogDto);
   }
 
   @Patch(':dogId')
-  update(@Param('dogId') dogId: number, @Body() body) {
-    return this.dogService.update(dogId, body);
+  @UsePipes(ValidationPipe)
+  update(@Body() updateDogDto: UpdateDogDto, @Param('dogId') dogId: number) {
+    return this.dogService.update(updateDogDto, dogId);
   }
 
   @Delete(':dogId')
