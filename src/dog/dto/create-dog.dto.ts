@@ -10,4 +10,8 @@ export class CreateDogDto {
 
   @IsNotEmpty()
   color: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  ownerId: number;
 }
